@@ -42,7 +42,7 @@ public class TestController {
     @GetMapping("/hello3")
     public void index3() {
         CompletableFuture<Void> completableFuture;
-        /*We need to make a  following work*/
+        /*We need to make a  following work. task executor part ewith completable future*/
        /* completableFuture = CompletableFuture.runAsync(()->{
             testExecutor.execute(()-> {
                 List<Transactions> transactions1 = transactionService.getAllTransactions();
@@ -62,32 +62,6 @@ public class TestController {
         completableFuture.thenRun(()-> testExecutor.execute(()->productService.getAllProduct()));
     }
 
-    @GetMapping("/hello4")
-    public void index4() {
-        CompletableFuture<Void> completableFuture;
-        /*We need to make a  following work*/
-       /* completableFuture = CompletableFuture.runAsync(()->{
-            testExecutor.execute(()-> {
-                List<Transactions> transactions1 = transactionService.getAllTransactions();
-                List<Transactions> transactions2 = transactionService.getAllTransactions();
-                List<Transactions> transactions3 = transactionService.getAllTransactions();
-                List<Transactions> transactions4 = transactionService.getAllTransactions();
-            });
-        });*/
-
-        List<Integer> allTransactionId = transactionService.getAllTransactionId();
-        List<List<Integer>> allTransactionIdBatch = batchList(allTransactionId);
-        completableFuture = CompletableFuture.runAsync(()->{
-            for (List<Integer> batch: allTransactionIdBatch) {
-                testExecutor.execute(()-> {
-                    transactionService.workWithTransactionId(batch);
-                });
-            }
-
-        });
-
-        //completableFuture.thenRun(()-> testExecutor.execute(()->productService.getAllProduct()));
-    }
 
 
     @GetMapping("/hello5")
