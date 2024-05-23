@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 
 @RestController
 @AllArgsConstructor
@@ -88,6 +89,43 @@ public class TestController {
         //completableFuture.thenRun(()-> testExecutor.execute(()->productService.getAllProduct()));
     }
 
+
+    @GetMapping("/hello5")
+    public void index5() {
+        CountDownLatch countDownLatch = new CountDownLatch(3);
+        for (int i=0;i<3;i++) {
+            testExecutor.execute(()-> {
+               doSomeWork();
+               countDownLatch.countDown();
+            });
+        }
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("I got executed again!!!!");
+    }
+
+    private void doSomeWork(){
+        System.out.println("Going to sleep");
+       try{
+           Thread.sleep(2000);
+           System.out.println("i have waken up!!!!!");
+       }catch (Exception e){
+
+       }
+        for (int i=0;i<10;i++) {
+            System.out.println(Thread.currentThread().getName()+" is executing in do some work!!!!!!!");
+            try {
+                System.out.println("Going to sleep again!!!!");
+                Thread.sleep(500);
+                System.out.println("i have waken up.Time to run!!!!!");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
     public  List<List<Integer>> batchList(List<Integer> data) {
         int batchSize = 500;
         List<List<Integer>> batches = new ArrayList<>();
